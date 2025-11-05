@@ -37,15 +37,53 @@ function renderBasket() {
     if (cartButtonsRow) cartButtonsRow.style.display = "none";
     return;
   }
-  basket.forEach((product) => {
+  // Group identical items into line items with a quantity
+  const counts = basket.reduce((acc, p) => {
+    acc[p] = (acc[p] || 0) + 1;
+    return acc;
+  }, {});
+
+  Object.keys(counts).forEach((product) => {
     const item = PRODUCTS[product];
-    if (item) {
-      const li = document.createElement("li");
-      li.innerHTML = `<span class='basket-emoji'>${item.emoji}</span> <span>${item.name}</span>`;
-      basketList.appendChild(li);
-    }
+    if (!item) return;
+    const li = document.createElement("li");
+    li.className = "basket-lineitem";
+    li.innerHTML = `
+      <span class='basket-emoji'>${item.emoji}</span>
+      <span class='product-name'>${item.name}</span>
+      <div class='quantity-controls' aria-label='Quantity controls for ${item.name}'>
+        <button class='qty-decrease' data-product='${product}' aria-label='Decrease quantity'>-</button>
+        <span class='qty' aria-live='polite'>${counts[product]}</span>
+        <button class='qty-increase' data-product='${product}' aria-label='Increase quantity'>+</button>
+      </div>
+    `;
+    // Attach event listeners for buttons
+    li.querySelector('.qty-increase').addEventListener('click', function () {
+      changeQuantity(product, 1);
+    });
+    li.querySelector('.qty-decrease').addEventListener('click', function () {
+      changeQuantity(product, -1);
+    });
+    basketList.appendChild(li);
   });
   if (cartButtonsRow) cartButtonsRow.style.display = "flex";
+}
+
+// Change quantity by adding or removing single occurrences of product
+function changeQuantity(product, delta) {
+  const basket = getBasket();
+  if (delta > 0) {
+    // add one instance
+    basket.push(product);
+  } else if (delta < 0) {
+    // remove one instance (first found)
+    const idx = basket.indexOf(product);
+    if (idx > -1) basket.splice(idx, 1);
+  }
+  localStorage.setItem('basket', JSON.stringify(basket));
+  // Re-render basket and indicator
+  renderBasket();
+  renderBasketIndicator();
 }
 
 function renderBasketIndicator() {
