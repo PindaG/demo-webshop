@@ -258,6 +258,40 @@ input[type="text"]:focus {
 #basketList li {
   background: none !important;
 }
+.basket-lineitem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.product-name {
+  flex: 1;
+}
+.quantity-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.quantity-controls .qty {
+  min-width: 1.5rem;
+  text-align: center;
+  font-weight: 700;
+}
+.quantity-controls button {
+  width: 2rem;
+  height: 2rem;
+  border: 2px solid #111;
+  border-radius: 50%;
+  background: #fff;
+  font-weight: 700;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+}
+.quantity-controls button:hover {
+  background: #eaf2ff;
+  transform: scale(1.06);
+}
 .cart-buttons-row {
   display: flex;
   flex-direction: row;
